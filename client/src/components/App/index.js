@@ -1,43 +1,55 @@
-import React, { Component } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-} from 'react-router-dom';
+import * as React from 'react';
 
-import Home from '../Home';
-import PrivateRoute from '../Navigation/PrivateRoute.js';
+const textbooks = [
+  {
+    title: 'The Road to React',
+    url: 'https://www.roadtoreact.com/',
+    author: 'Wieruch, R.',
+    year: "2021",
+  }, {
+    title: 'Learning Node.js',
+    url: 'https://github.com/marcwan/LearningNodeJS',
+    author: 'Wandschneider, Marc',
+    year: "2017",
+  },
+];
 
+function getTitle(id) {
+  return textbooks[id].title;
+}
 
+function App() {
+  return (
+    <div>
+      <h1>
+        Hello!
+      </h1>
+      <label htmlFor="saerch">Search: </label>
+      <input id="search" type="text" />
+      <hr />
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+      <Books />
+      
+    </div>
+  )
+}
 
-    this.state = {
-      //
-    };
-  }
+function Books() {
+  return (
+    <ul>
+      {textbooks.map(function (item) {
+        return (
+          <li>
+            <span>
+              <a href={item.url}>{item.url}</a>
+            </span>
+            <span> {item.title}</span>
+            <span>{" by " + item.author}</span>
+          </li>);
+      })}
+    </ul>
 
-  componentDidMount() {
-    //
-  }
-
-
-  componentWillUnmount() {
-    this.listener();
-  }
-
-
-  render() {
-    return (
-	  <Router>
-	    <div>
-        <PrivateRoute exact path="/" component={Home}/>
-	    </div>
-	  </Router>
-    );
-  }
+  )
 }
 
 export default App;
