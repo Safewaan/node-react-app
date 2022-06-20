@@ -84,6 +84,8 @@ const Review = () => {
         if (!(selectedMovie === '') && !(enteredTitle === '') && !(enteredReview === '') && !(selectedRating === '')) {
             setShowReceivedMessage(true);
             handleAddReviews();
+        } else {
+            setShowReceivedMessage(false); // removes submission message
         }
     }
 
