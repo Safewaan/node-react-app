@@ -1,172 +1,272 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
+import * as React from 'react';
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from "@material-ui/core/Select";
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Box from "@material-ui/core/Box";
+import Button from '@material-ui/core/Button';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
+const Review = () => {
 
-//Dev mode
-const serverURL = "http://ov-research-4.uwaterloo.ca:3094"; //enable for dev mode
+    // List State
+    const [reviewsList, setReviews] = React.useState([]);
 
-//Deployment mode instructions
-//const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
-//To find your port number: 
-//ssh to ov-research-4.uwaterloo.ca and run the following command: 
-//env | grep "PORT"
-//copy the number only and paste it in the serverURL in place of PORT, e.g.: const serverURL = "http://ov-research-4.uwaterloo.ca:3000";
+    // Review States
+    const [selectedMovie, setSelectedMovie] = React.useState('');
+    const [enteredTitle, setEnteredTitle] = React.useState('');
+    const [enteredReview, setEnteredReview] = React.useState('');
+    const [selectedRating, setSelectedRating] = React.useState('');
+    const [showReceivedMessage, setShowReceivedMessage] = React.useState('');
 
-const fetch = require("node-fetch");
+    // Error States
+    const [movieError, setMovieError] = React.useState(false);
+    const [titleError, setTitleError] = React.useState(false);
+    const [bodyError, setBodyError] = React.useState(false);
+    const [ratingError, setRatingError] = React.useState(false);
 
-const opacityValue = 0.9;
+    // List State Handling
+    const handleAddReviews = () => {
+        const newReviewsList = reviewsList.concat({
+            selectedMovie: selectedMovie,
+            enteredTitle: enteredTitle,
+            enteredReview: enteredReview,
+            selectedRating: selectedRating,
+        })
 
-const theme = createTheme({
-  palette: {
-    type: 'dark',
-    background: {
-      default: "#000000"
-    },
-    primary: {
-      main: "#52f1ff",
-    },
-    secondary: {
-      main: "#b552f7",
-    },
-  },
-});
+        setReviews(newReviewsList);
 
-const styles = theme => ({
-  root: {
-    body: {
-      backgroundColor: "#000000",
-      opacity: opacityValue,
-      overflow: "hidden",
-    },
-  },
-  mainMessage: {
-    opacity: opacityValue,
-  },
-
-  mainMessageContainer: {
-    marginTop: "20vh",
-    marginLeft: theme.spacing(20),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(4),
-    },
-  },
-  paper: {
-    overflow: "hidden",
-  },
-  message: {
-    opacity: opacityValue,
-    maxWidth: 250,
-    paddingBottom: theme.spacing(2),
-  },
-
-});
-
-
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userID: 1,
-      mode: 0
+        setSelectedMovie('');
+        setEnteredTitle('');
+        setEnteredReview('');
+        setSelectedRating('');
     }
-  };
 
-  componentDidMount() {
-    //this.loadUserSettings();
-  }
+    // Review State Handling
+    const handleChangeMovie = (event) => {
+        setSelectedMovie(event.target.value);
+        setMovieError(event.target.value === '');
+        setShowReceivedMessage(false);
+    };
 
+    const handleChangeTitle = (event) => {
+        setEnteredTitle(event.target.value);
+        setTitleError(event.target.value === '');
+        setShowReceivedMessage(false);
+    };
 
-  loadUserSettings() {
-    this.callApiLoadUserSettings()
-      .then(res => {
-        //console.log("loadUserSettings returned: ", res)
-        var parsed = JSON.parse(res.express);
-        console.log("loadUserSettings parsed: ", parsed[0].mode)
-        this.setState({ mode: parsed[0].mode });
-      });
-  }
+    const handleChangeBody = (event) => {
+        setEnteredReview(event.target.value);
+        setBodyError(event.target.value === '');
+        setShowReceivedMessage(false);
+    };
 
-  callApiLoadUserSettings = async () => {
-    const url = serverURL + "/api/loadUserSettings";
+    const handleChangeReviewRating = (event) => {
+        setSelectedRating(event.target.value);
+        setRatingError(event.target.value === '');
+        setShowReceivedMessage(false);
+    };
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        //authorization: `Bearer ${this.state.token}`
-      },
-      body: JSON.stringify({
-        userID: this.state.userID
-      })
-    });
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("User settings: ", body);
-    return body;
-  }
+    // Handle Validation
+    const handleValidation = () => {
+        setMovieError(selectedMovie === '');
+        setTitleError(enteredTitle === '');
+        setBodyError(enteredReview === '');
+        setRatingError(selectedRating === '');
 
-  render() {
-    const { classes } = this.props;
-
-
-
-    const mainMessage = (
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={{ minHeight: '100vh' }}
-        className={classes.mainMessageContainer}
-      >
-        <Grid item>
-
-          <Typography
-            variant={"h3"}
-            className={classes.mainMessage}
-            align="flex-start"
-          >
-            {this.state.mode === 0 ? (
-              <React.Fragment>
-                Welcome to MSci245!
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                Welcome back!
-              </React.Fragment>
-            )}
-          </Typography>
-
-        </Grid>
-      </Grid>
-    )
-
+        if (!(selectedMovie === '') && !(enteredTitle === '') && !(enteredReview === '') && !(selectedRating === '')) {
+            setShowReceivedMessage(true);
+            handleAddReviews();
+        } else {
+            setShowReceivedMessage(false); // removes submission message
+        }
+    }
 
     return (
-      <MuiThemeProvider theme={theme}>
-        <div className={classes.root}>
-          <CssBaseline />
-          <Paper
-            className={classes.paper}
-          >
-            {mainMessage}
-          </Paper>
+        <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+        >
+            <Typography
+                variant="h3"
+                gutterBottom
+                component="div">
+                Rotten Potatoes
+            </Typography>
 
-        </div>
-      </MuiThemeProvider>
-    );
-  }
+            <MovieSelection
+                selectedMovie={selectedMovie}
+                movieError={movieError}
+                handleChangeMovie={handleChangeMovie}
+            ></MovieSelection>
+
+            <ReviewTitle
+                enteredTitle={enteredTitle}
+                titleError={titleError}
+                handleChangeTitle={handleChangeTitle}
+            ></ReviewTitle>
+
+            <ReviewBody
+                enteredReview={enteredReview}
+                bodyError={bodyError}
+                handleChangeBody={handleChangeBody}
+            ></ReviewBody>
+
+            <ReviewRating
+                selectedRating={selectedRating}
+                ratingError={ratingError}
+                handleChangeReviewRating={handleChangeReviewRating}
+            ></ReviewRating>
+
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={() => { handleValidation() }}>Submit</Button>
+
+            {showReceivedMessage && <p style={{ color: 'green' }}>Your review has been received.</p>}
+            {!showReceivedMessage && <Box sx={{ m: 3 }} />}
+
+            <Typography
+                variant="h4"
+                gutterBottom
+                component="div">
+                Reviews
+            </Typography>
+
+            <ul>
+                {reviewsList.map(function (review) {
+                    return (
+                        <li>
+                            <span> {"Movie: " + review.selectedMovie}</span>
+                            <span> {" | Review Title: " + review.enteredTitle}</span>
+                            <span> {" | Review Body: " + review.enteredReview + "\n"}</span>
+                            <span>{" | Rating: " + review.selectedRating}</span>
+                        </li>
+                    )
+                })}
+            </ul>
+
+        </Grid>
+    )
 }
 
-Home.propTypes = {
-  classes: PropTypes.object.isRequired
-};
+const MovieSelection = (props) => {
+    return (
+        <FormControl className={"Movie-Title-Input"}>
+            <InputLabel id="controlled-open-select-label">Movie:</InputLabel>
+            <Select
+                id="review-movie"
+                value={props.selectedMovie}
+                onChange={props.handleChangeMovie}
+            >
 
-export default withStyles(styles)(Home);
+                <MenuItem value={"Morbius"}>Morbius</MenuItem>
+                <MenuItem value={"Batman"}>The Batman</MenuItem>
+                <MenuItem value={"Doctor Strange in the Multiverse of Madness"}>Doctor Strange in the Multiverse of Madness</MenuItem>
+                <MenuItem value={"Sonic the Hedgehog 2"}>Sonic the Hedgehog 2</MenuItem>
+                <MenuItem value={"Uncharted"}>Uncharted</MenuItem>
+            </Select>
+            <FormHelperText>Select a movie.</FormHelperText>
+            {props.movieError && <p style={{ color: 'red' }}>Please select a movie.</p>}
+            {!props.movieError && <Box sx={{ m: 3 }} />}
+        </FormControl>
+    )
+}
+
+const ReviewTitle = (props) => {
+    return (
+        <div>
+            <TextField
+                value={props.enteredTitle}
+                onChange={props.handleChangeTitle}
+                id="review-title"
+                label="Review Title:"
+                variant="outlined"
+            ></TextField>
+            <FormHelperText>Enter a title.</FormHelperText>
+            {props.titleError && <p style={{ color: 'red' }}>Please enter your review title.</p>}
+            {!props.titleError && <Box sx={{ m: 3 }} />}
+        </div>
+    )
+}
+
+const ReviewBody = (props) => {
+    return (
+        <div>
+            <TextField
+                value={props.enteredReview}
+                onChange={props.handleChangeBody}
+                inputProps={{ maxLength:200 }}
+                id="review-body"
+                label="Review:"
+                multiline
+                rows={4}
+                variant="outlined"
+            ></TextField>
+            <FormHelperText>Enter a review.</FormHelperText>
+            {props.bodyError && <p style={{ color: 'red' }}>Please enter your review.</p>}
+            {!props.bodyError && <Box sx={{ m: 3 }} />}
+        </div>
+    )
+}
+
+const ReviewRating = (props) => {
+    return (
+        <FormControl component="fieldset">
+            <FormLabel component="legend">Rating (1 - Low | 5 - High):</FormLabel>
+            <RadioGroup
+                value={props.selectedRating}
+                onChange={props.handleChangeReviewRating}
+                id="review-rating"
+                row aria-label="position"
+                name="position"
+                defaultValue="top"
+            >
+                <FormControlLabel
+                    value="1"
+                    control={<Radio color="primary" />}
+                    label="1"
+                    labelPlacement="bottom"
+                />
+                <FormControlLabel
+                    value="2"
+                    control={<Radio color="primary" />}
+                    label="2"
+                    labelPlacement="bottom"
+                />
+                <FormControlLabel
+                    value="3"
+                    control={<Radio color="primary" />}
+                    label="3"
+                    labelPlacement="bottom"
+                />
+                <FormControlLabel
+                    value="4"
+                    control={<Radio color="primary" />}
+                    label="4"
+                    labelPlacement="bottom"
+                />
+                <FormControlLabel
+                    value="5"
+                    control={<Radio color="primary" />}
+                    label="5"
+                    labelPlacement="bottom"
+                />
+            </RadioGroup>
+            <FormHelperText>Select a rating.</FormHelperText>
+            {props.ratingError && <p style={{ color: 'red' }}>Please select the rating.</p>}
+            {!props.ratingError && <Box sx={{ m: 3 }} />}
+        </FormControl>
+    )
+}
+
+export default Review;
