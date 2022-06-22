@@ -62,7 +62,7 @@ const App = () => {
   }, []);
 
   React.useEffect(() => {
-    handleRecipeSearch();
+    handleCalorieSearch();
   }, [ingredientSearchTerm, calorieSearchTerm]);
 
   const handleToggleIngredients = (item) => {
@@ -127,6 +127,17 @@ const App = () => {
       });
   }
 
+  // MY WORK
+  const handleCalorieSearch = () => {
+    callApiFindRecipeByCalories()
+    .then(res => {
+      console.log("callApiFindRecipeByCalories returned: ", res)
+      var parsed = JSON.parse(res.express);
+      console.log("callApiFindRecipe parsed: ", parsed[0])
+      setRecipesList(parsed);
+    })
+  }
+
   const callApiFindRecipe = async () => {
 
     const url = serverURL + "/api/findRecipe";
@@ -146,6 +157,27 @@ const App = () => {
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     console.log("Found recipes: ", body);
+    return body;
+  }
+
+  
+  // MY WORK
+  const callApiFindRecipeByCalories = async () => {
+    const url = serverURL + "/api/findRecipeByCalories";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        calorieSearchTerm: calorieSearchTerm
+      })
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("Found recipes by calories: ", body);
     return body;
   }
 

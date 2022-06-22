@@ -91,6 +91,24 @@ app.post('/api/loadUserSettings', (req, res) => {
 
 });
 
+app.post('/api/findRecipeByCalories', (req, res) => {
+	let calorieSearchTerm = req.body.calorieSearchTerm;
+	console.log("calorieSearchTerm: ", calorieSearchTerm);
+
+	const foundRecipesByCalorie = recipes.filter(function (recipe) {
+		if (calorieSearchTerm) {
+		  return parseInt(recipe.calories) <= parseInt(calorieSearchTerm);
+		} else {
+		  return recipe;
+		}
+	  });
+
+	let string = JSON.stringify(foundRecipesByCalorie);
+	console.log(string);
+	//let obj = JSON.parse(string);
+	res.send({ express: string });
+})
+
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
