@@ -103,7 +103,7 @@ const Review = () => {
             headers: {
                 "Content-Type": "application/json",
             }
-        })
+        });
 
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
@@ -118,7 +118,7 @@ const Review = () => {
                 var parsed = JSON.parse(res.express);
                 console.log("callApiGetMovies parsed: ", parsed);
                 setMovies(parsed);
-            })
+            });
     }
 
     React.useEffect(() => {

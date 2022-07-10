@@ -40,16 +40,13 @@ app.post('/api/getMovies', (req, res) => {
 
 	let connection = mysql.createConnection(config);
 
-	let sql = `SELECT * FROM movies`;
+	let sql = `SELECT * FROM shchowdh.movies`;
 	console.log(sql);
 
-	connection.connect(function(err) {
-		if (err) throw err;
-		connection.query(sql, (error, results, fields) => {
-			if (error) {
-				return console.error(error.message);
-			}
-	})
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
 
 		let string = JSON.stringify(results);
 
