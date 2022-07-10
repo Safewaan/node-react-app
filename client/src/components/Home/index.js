@@ -102,10 +102,7 @@ const Review = () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                movies: movies
-            })
+            }
         })
 
         const body = await response.json();
