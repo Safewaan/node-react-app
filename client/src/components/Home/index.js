@@ -206,8 +206,8 @@ const MovieSelection = (props) => {
                 onChange={props.handleChangeMovie}
             >
                 {props.movies.map((movie) => {
-                    <MenuItem value={movie.name}>{movie.name}</MenuItem>
-                })}
+                    return <MenuItem value={movie.name}>test</MenuItem>
+                })};
 
                 {/* <MenuItem value={"Morbius"}>Morbius</MenuItem>
                 <MenuItem value={"Batman"}>The Batman</MenuItem>
