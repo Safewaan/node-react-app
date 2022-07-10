@@ -14,10 +14,15 @@ import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+const serverURL = "http://ec2-18-188-101-79.us-east-2.compute.amazonaws.com:3094"
+
 const Review = () => {
 
     // List State
     const [reviewsList, setReviews] = React.useState([]);
+
+    // Movies State
+    const [movies, setMovies] = React.useState([]);
 
     // Review States
     const [selectedMovie, setSelectedMovie] = React.useState('');
@@ -88,6 +93,40 @@ const Review = () => {
             setShowReceivedMessage(false); // removes submission message
         }
     }
+
+    const callApiGetMovies = async () => {
+        const url = serverURL + "/api/getMovies";
+        console.log(url);
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                movies: movies
+            })
+        })
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Found movies: ", body);
+        return body;
+    }
+
+    const handleGetMovies = () => {
+        callApiGetMovies
+            .then(res => {
+                console.log("callApiGetMovies returned: ", res)
+                var parsed = JSON.parse(res.express);
+                console.log("callApiGetMovies parsed: ", parsed);
+                setMovies(parsed);
+            })
+    }
+
+    React.useEffect(() => {
+        handleGetMovies();
+      }, [movies]);
 
     return (
         <Grid
@@ -205,7 +244,7 @@ const ReviewBody = (props) => {
             <TextField
                 value={props.enteredReview}
                 onChange={props.handleChangeBody}
-                inputProps={{ maxLength:200 }}
+                inputProps={{ maxLength: 200 }}
                 id="review-body"
                 label="Review:"
                 multiline
