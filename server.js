@@ -39,17 +39,17 @@ app.post('/api/loadUserSettings', (req, res) => {
 app.post('/api/getMovies', (req, res) => {
 
 	let connection = mysql.createConnection(config);
-	let movies = req.body.movies;
 
-	let sql = `SELECT * FROM shchowdh.movies`;
+	let sql = `SELECT * FROM movies`;
 	console.log(sql);
-	let data = [movies];
-	console.log(data);
 
-	connection.query(sql, data, (error, reuslts, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
+	connection.connect(function(err) {
+		if (err) throw err;
+		connection.query(sql, (error, results, fields) => {
+			if (error) {
+				return console.error(error.message);
+			}
+	})
 
 		let string = JSON.stringify(results);
 
@@ -60,5 +60,5 @@ app.post('/api/getMovies', (req, res) => {
 })
 
 
-//app.listen(port, () => console.log("Listening on port ${port}")); //for the dev version
-app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
+app.listen(port, () => console.log("Listening on port ${port}")); //for the dev version
+//app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server

@@ -115,7 +115,7 @@ const Review = () => {
     }
 
     const handleGetMovies = () => {
-        callApiGetMovies
+        callApiGetMovies()
             .then(res => {
                 console.log("callApiGetMovies returned: ", res)
                 var parsed = JSON.parse(res.express);
