@@ -14,7 +14,7 @@ import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-const serverURL = "http://ec2-18-188-101-79.us-east-2.compute.amazonaws.com:3094"
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
 
 const Review = () => {
 
@@ -143,6 +143,7 @@ const Review = () => {
                 selectedMovie={selectedMovie}
                 movieError={movieError}
                 handleChangeMovie={handleChangeMovie}
+                movies={movies}
             ></MovieSelection>
 
             <ReviewTitle
@@ -204,12 +205,15 @@ const MovieSelection = (props) => {
                 value={props.selectedMovie}
                 onChange={props.handleChangeMovie}
             >
+                {props.movies.map((movie) => {
+                    <MenuItem value={movie.name}>{movie.name}</MenuItem>
+                })}
 
-                <MenuItem value={"Morbius"}>Morbius</MenuItem>
+                {/* <MenuItem value={"Morbius"}>Morbius</MenuItem>
                 <MenuItem value={"Batman"}>The Batman</MenuItem>
                 <MenuItem value={"Doctor Strange in the Multiverse of Madness"}>Doctor Strange in the Multiverse of Madness</MenuItem>
                 <MenuItem value={"Sonic the Hedgehog 2"}>Sonic the Hedgehog 2</MenuItem>
-                <MenuItem value={"Uncharted"}>Uncharted</MenuItem>
+                <MenuItem value={"Uncharted"}>Uncharted</MenuItem> */}
             </Select>
             <FormHelperText>Select a movie.</FormHelperText>
             {props.movieError && <p style={{ color: 'red' }}>Please select a movie.</p>}
