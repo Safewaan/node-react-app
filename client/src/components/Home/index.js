@@ -25,6 +25,7 @@ const Review = () => {
     const [movies, setMovies] = React.useState([]);
 
     // Review States
+    const [movieID, setMovieID] = React.useState('');
     const [selectedMovie, setSelectedMovie] = React.useState('');
     const [enteredTitle, setEnteredTitle] = React.useState('');
     const [enteredReview, setEnteredReview] = React.useState('');
@@ -56,7 +57,8 @@ const Review = () => {
 
     // Review State Handling
     const handleChangeMovie = (event) => {
-        setSelectedMovie(event.target.value);
+        setSelectedMovie(event.target.name);
+        setMovieID(event.target.value);
         setMovieError(event.target.value === '');
         setShowReceivedMessage(false);
     };
@@ -92,8 +94,9 @@ const Review = () => {
         } else {
             setShowReceivedMessage(false); // removes submission message
         }
-    }
+    };
 
+    // API Calls
     const callApiGetMovies = async () => {
         const url = serverURL + "/api/getMovies";
         console.log(url);
@@ -109,8 +112,27 @@ const Review = () => {
         if (response.status !== 200) throw Error(body.message);
         console.log("Found movies: ", body);
         return body;
+    };
+
+    const callApiAddReview = async () => {
+        const url = serverURL + "/api/addReview";
+        console.log(url);
+
+        const response = await fetch (url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                
+                reviewTitle: enteredTitle,
+                reviewContent: enteredReview,
+                revieweScore: selectedRating
+              })
+        })
     }
 
+    // API Handles
     const handleGetMovies = () => {
         callApiGetMovies()
             .then(res => {
@@ -119,7 +141,7 @@ const Review = () => {
                 console.log("callApiGetMovies parsed: ", parsed);
                 setMovies(parsed);
             });
-    }
+    };
 
     React.useEffect(() => {
         handleGetMovies();
@@ -141,6 +163,7 @@ const Review = () => {
 
             <MovieSelection
                 selectedMovie={selectedMovie}
+                movieID={movieID}
                 movieError={movieError}
                 handleChangeMovie={handleChangeMovie}
                 movies={movies}
@@ -202,18 +225,14 @@ const MovieSelection = (props) => {
             <InputLabel id="controlled-open-select-label">Movie:</InputLabel>
             <Select
                 id="review-movie"
-                value={props.selectedMovie}
+                name={movie.name}
+                value={props.movieID}
                 onChange={props.handleChangeMovie}
             >
                 {props.movies.map((movie) => {
-                    return <MenuItem value={movie.name}>{movie.name}</MenuItem>
+                    return <MenuItem value={movie.id}>{movie.name}</MenuItem>
                 })};
 
-                {/* <MenuItem value={"Morbius"}>Morbius</MenuItem>
-                <MenuItem value={"Batman"}>The Batman</MenuItem>
-                <MenuItem value={"Doctor Strange in the Multiverse of Madness"}>Doctor Strange in the Multiverse of Madness</MenuItem>
-                <MenuItem value={"Sonic the Hedgehog 2"}>Sonic the Hedgehog 2</MenuItem>
-                <MenuItem value={"Uncharted"}>Uncharted</MenuItem> */}
             </Select>
             <FormHelperText>Select a movie.</FormHelperText>
             {props.movieError && <p style={{ color: 'red' }}>Please select a movie.</p>}
