@@ -25,7 +25,6 @@ const Review = () => {
     const [movies, setMovies] = React.useState([]);
 
     // Review States
-    const [movieID, setMovieID] = React.useState('');
     const [selectedMovie, setSelectedMovie] = React.useState('');
     const [enteredTitle, setEnteredTitle] = React.useState('');
     const [enteredReview, setEnteredReview] = React.useState('');
@@ -48,6 +47,7 @@ const Review = () => {
         })
 
         setReviews(newReviewsList);
+        handleAddReview();
 
         setSelectedMovie('');
         setEnteredTitle('');
@@ -57,8 +57,7 @@ const Review = () => {
 
     // Review State Handling
     const handleChangeMovie = (event) => {
-        setSelectedMovie(event.target.name);
-        setMovieID(event.target.value);
+        setSelectedMovie(event.target.value);
         setMovieError(event.target.value === '');
         setShowReceivedMessage(false);
     };
@@ -136,16 +135,27 @@ const Review = () => {
     const handleGetMovies = () => {
         callApiGetMovies()
             .then(res => {
-                console.log("callApiGetMovies returned: ", res)
+                console.log("callApiGetMovies returned: ", res);
                 var parsed = JSON.parse(res.express);
                 console.log("callApiGetMovies parsed: ", parsed);
                 setMovies(parsed);
             });
     };
 
+    const handleAddReview = () => {
+        callApiAddReview()
+        .then (res => {
+            console.log("callApiAddReview returned: ", res);
+            var parsed = JSON.parse(res.express);
+            console.log("callApiAddReview parsed: ", parsed);
+        })
+    }
+
     React.useEffect(() => {
         handleGetMovies();
       }, [movies]);
+
+      
 
     return (
         <Grid
@@ -163,7 +173,6 @@ const Review = () => {
 
             <MovieSelection
                 selectedMovie={selectedMovie}
-                movieID={movieID}
                 movieError={movieError}
                 handleChangeMovie={handleChangeMovie}
                 movies={movies}
@@ -225,12 +234,11 @@ const MovieSelection = (props) => {
             <InputLabel id="controlled-open-select-label">Movie:</InputLabel>
             <Select
                 id="review-movie"
-                name={props.name}
-                value={props.movieID}
+                value={props.selectedMovie}
                 onChange={props.handleChangeMovie}
             >
                 {props.movies.map((movie) => {
-                    return <MenuItem value={movie.id}>{movie.name}</MenuItem>
+                    return <MenuItem value={movie.name}>{movie.name}</MenuItem>
                 })};
 
             </Select>
