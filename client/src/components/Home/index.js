@@ -13,10 +13,14 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
 const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
 
 const Review = () => {
+
+    // User State
+    const [userID, setUserID] = React.useState(1);
 
     // List State
     const [reviewsList, setReviews] = React.useState([]);
@@ -123,12 +127,18 @@ const Review = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                
+                userID: userID,
+                movieID: 969,
                 reviewTitle: enteredTitle,
                 reviewContent: enteredReview,
-                revieweScore: selectedRating
+                reviewScore: selectedRating
               })
-        })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Sent review: ", body);
+        return body;
     }
 
     // API Handles
