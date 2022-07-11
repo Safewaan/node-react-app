@@ -29,6 +29,7 @@ const Review = () => {
     const [movies, setMovies] = React.useState([]);
 
     // Review States
+    const [movieID, setMovieID] = React.useState('');
     const [selectedMovie, setSelectedMovie] = React.useState('');
     const [enteredTitle, setEnteredTitle] = React.useState('');
     const [enteredReview, setEnteredReview] = React.useState('');
@@ -62,6 +63,13 @@ const Review = () => {
     // Review State Handling
     const handleChangeMovie = (event) => {
         setSelectedMovie(event.target.value);
+
+        movies.map((movie) => {
+            if (movie.name === selectedMovie) {
+                setMovieID(movie.id);
+            };
+        });
+
         setMovieError(event.target.value === '');
         setShowReceivedMessage(false);
     };
@@ -128,7 +136,7 @@ const Review = () => {
             },
             body: JSON.stringify({
                 userID: userID,
-                movieID: 969,
+                movieID: movieID,
                 reviewTitle: enteredTitle,
                 reviewContent: enteredReview,
                 reviewScore: selectedRating
@@ -139,7 +147,7 @@ const Review = () => {
         if (response.status !== 200) throw Error(body.message);
         console.log("Sent review: ", body);
         return body;
-    }
+    };
 
     // API Handles
     const handleGetMovies = () => {
@@ -159,13 +167,11 @@ const Review = () => {
             var parsed = JSON.parse(res.express);
             console.log("callApiAddReview parsed: ", parsed);
         })
-    }
+    };
 
     React.useEffect(() => {
         handleGetMovies();
-      }, [movies]);
-
-      
+      }, []);
 
     return (
         <Grid
