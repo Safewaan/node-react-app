@@ -225,7 +225,7 @@ const MovieSelection = (props) => {
             <InputLabel id="controlled-open-select-label">Movie:</InputLabel>
             <Select
                 id="review-movie"
-                name={movie.name}
+                name={props.name}
                 value={props.movieID}
                 onChange={props.handleChangeMovie}
             >
