@@ -65,7 +65,7 @@ const Review = () => {
         setSelectedMovie(event.target.value);
 
         movies.map((movie) => {
-            if (movie.name === selectedMovie) {
+            if (movie.name === event.target.value) {
                 setMovieID(movie.id);
             };
         });
