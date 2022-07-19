@@ -13,9 +13,12 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import history from '../Navigation/history';
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
+//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
+const serverURL = "";
 
 const Review = () => {
 
@@ -58,7 +61,7 @@ const Review = () => {
         setEnteredTitle('');
         setEnteredReview('');
         setSelectedRating('');
-    }
+    };
 
     // Review State Handling
     const handleChangeMovie = (event) => {
@@ -129,7 +132,7 @@ const Review = () => {
         const url = serverURL + "/api/addReview";
         console.log(url);
 
-        const response = await fetch (url, {
+        const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -140,7 +143,7 @@ const Review = () => {
                 reviewTitle: enteredTitle,
                 reviewContent: enteredReview,
                 reviewScore: selectedRating
-              })
+            })
         });
 
         const body = await response.json();
@@ -162,87 +165,94 @@ const Review = () => {
 
     const handleAddReview = () => {
         callApiAddReview()
-        .then (res => {
-            console.log("callApiAddReview returned: ", res);
-            var parsed = JSON.parse(res.express);
-            console.log("callApiAddReview parsed: ", parsed);
-        })
+            .then(res => {
+                console.log("callApiAddReview returned: ", res);
+                var parsed = JSON.parse(res.express);
+                console.log("callApiAddReview parsed: ", parsed);
+            })
     };
 
     React.useEffect(() => {
         handleGetMovies();
-      }, []);
+    }, []);
 
     return (
-        <Grid
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-        >
-            <Typography
-                variant="h3"
-                gutterBottom
-                component="div">
-                Rotten Potatoes
-            </Typography>
 
-            <MovieSelection
-                selectedMovie={selectedMovie}
-                movieError={movieError}
-                handleChangeMovie={handleChangeMovie}
-                movies={movies}
-            ></MovieSelection>
+        <div>
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <Button color="inherit" onClick={() => history.push('/')}>Rotten Potatoes</Button>
+                        <Button color="inherit" onClick={() => history.push('/search')}>Search for a Movie</Button>
+                        <Button color="inherit" onClick={() => history.push('/reviews')}>Add a Review</Button>
+                        <Button color="inherit" onClick={() => history.push('/recommendations')}>Movie Recommendations</Button>
+                    </Toolbar>
+                </AppBar>
+            </Box>
 
-            <ReviewTitle
-                enteredTitle={enteredTitle}
-                titleError={titleError}
-                handleChangeTitle={handleChangeTitle}
-            ></ReviewTitle>
+            <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <MovieSelection
+                    selectedMovie={selectedMovie}
+                    movieError={movieError}
+                    handleChangeMovie={handleChangeMovie}
+                    movies={movies}
+                ></MovieSelection>
 
-            <ReviewBody
-                enteredReview={enteredReview}
-                bodyError={bodyError}
-                handleChangeBody={handleChangeBody}
-            ></ReviewBody>
+                <ReviewTitle
+                    enteredTitle={enteredTitle}
+                    titleError={titleError}
+                    handleChangeTitle={handleChangeTitle}
+                ></ReviewTitle>
 
-            <ReviewRating
-                selectedRating={selectedRating}
-                ratingError={ratingError}
-                handleChangeReviewRating={handleChangeReviewRating}
-            ></ReviewRating>
+                <ReviewBody
+                    enteredReview={enteredReview}
+                    bodyError={bodyError}
+                    handleChangeBody={handleChangeBody}
+                ></ReviewBody>
 
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => { handleValidation() }}>Submit</Button>
+                <ReviewRating
+                    selectedRating={selectedRating}
+                    ratingError={ratingError}
+                    handleChangeReviewRating={handleChangeReviewRating}
+                ></ReviewRating>
 
-            {showReceivedMessage && <p style={{ color: 'green' }}>Your review has been received.</p>}
-            {!showReceivedMessage && <Box sx={{ m: 3 }} />}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => { handleValidation() }}>Submit</Button>
 
-            <Typography
-                variant="h4"
-                gutterBottom
-                component="div">
-                Reviews
-            </Typography>
+                {showReceivedMessage && <p style={{ color: 'green' }}>Your review has been received.</p>}
+                {!showReceivedMessage && <Box sx={{ m: 3 }} />}
 
-            <ul>
-                {reviewsList.map(function (review) {
-                    return (
-                        <li>
-                            <span> {"Movie: " + review.selectedMovie}</span>
-                            <span> {" | Review Title: " + review.enteredTitle}</span>
-                            <span> {" | Review Body: " + review.enteredReview + "\n"}</span>
-                            <span>{" | Rating: " + review.selectedRating}</span>
-                        </li>
-                    )
-                })}
-            </ul>
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    component="div">
+                    Submitted Reviews
+                </Typography>
 
-        </Grid>
+                <ul>
+                    {reviewsList.map(function (review) {
+                        return (
+                            <li>
+                                <span> {"Movie: " + review.selectedMovie}</span>
+                                <span> {" | Review Title: " + review.enteredTitle}</span>
+                                <span> {" | Review Body: " + review.enteredReview + "\n"}</span>
+                                <span>{" | Rating: " + review.selectedRating}</span>
+                            </li>
+                        )
+                    })};
+                </ul>
+
+            </Grid>
+        </div>
     )
-}
+};
 
 const MovieSelection = (props) => {
     return (
@@ -263,7 +273,7 @@ const MovieSelection = (props) => {
             {!props.movieError && <Box sx={{ m: 3 }} />}
         </FormControl>
     )
-}
+};
 
 const ReviewTitle = (props) => {
     return (
@@ -280,7 +290,7 @@ const ReviewTitle = (props) => {
             {!props.titleError && <Box sx={{ m: 3 }} />}
         </div>
     )
-}
+};
 
 const ReviewBody = (props) => {
     return (
@@ -300,7 +310,7 @@ const ReviewBody = (props) => {
             {!props.bodyError && <Box sx={{ m: 3 }} />}
         </div>
     )
-}
+};
 
 const ReviewRating = (props) => {
     return (
@@ -350,6 +360,6 @@ const ReviewRating = (props) => {
             {!props.ratingError && <Box sx={{ m: 3 }} />}
         </FormControl>
     )
-}
+};
 
 export default Review;

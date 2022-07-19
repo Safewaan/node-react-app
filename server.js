@@ -13,16 +13,93 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
-
-app.post('/api/loadUserSettings', (req, res) => {
+app.post('/api/getMovies', (req, res) => {
 
 	let connection = mysql.createConnection(config);
-	let userID = req.body.userID;
 
-	let sql = `SELECT mode FROM user WHERE userID = ?`;
+	let sql =
+		`SELECT DISTINCT 
+		movies.name, 
+		ANY_VALUE(movies.year) AS year, 
+		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
+		group_concat(movies_genres.genre) AS genres
+		FROM movies
+		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id
+		INNER JOIN directors ON directors.id = movies_directors.director_id
+		INNER JOIN movies_genres ON movies_genres.movie_id = movies.id
+		GROUP BY name 
+		ORDER BY name;`;
 	console.log(sql);
-	let data = [userID];
-	console.log(data);
+
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = JSON.stringify(results);
+
+		res.send({ express: string });
+	});
+
+	connection.end();
+});
+
+app.post('/api/searchMovies', (req, res) => {
+
+	let connection = mysql.createConnection(config);
+
+	let sql =
+		`SELECT DISTINCT 
+		movies.name, 
+		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
+		group_concat(DISTINCT Review.reviewTitle) AS reviewTitles, 
+		group_concat(DISTINCT Review.reviewContent) AS reviewContents, 
+		group_concat(DISTINCT Review.reviewScore) AS ReviewScores, 
+		AVG(Review.reviewScore) AS AverageRating
+
+		FROM movies
+		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id
+		INNER JOIN directors ON directors.id = movies_directors.director_id
+		LEFT JOIN Review ON Review.movieID = movies.id
+        INNER JOIN roles on roles.movie_id = movies.id
+        INNER JOIN actors on actors.id = roles.actor_id
+		WHERE `;
+
+	let data = [];
+
+	let sqlWhereClause = '';
+	let nameFilter = '';
+	let actorFilter = '';
+	let directorFilter = '';
+
+	if (req.body.name !== '') {
+		nameFilter = "name = ?";
+		data.push(req.body.name);
+	}
+
+	if (req.body.actor !== '') {
+		actorFilter = 'CONCAT(actors.first_name, \" \", actors.last_name) = ?';
+		data.push(req.body.actor);
+	}
+
+	if (req.body.director !== '') {
+		directorFilter = "CONCAT(directors.first_name, \" \", directors.last_name) = ?";
+		data.push(req.body.director);
+	}
+
+	let filters = [nameFilter, actorFilter, directorFilter];
+
+	filters.map(function (filter) {
+		if (filter !== '') {
+			if (sqlWhereClause !== '') {
+				sqlWhereClause += " AND ";
+			};
+			sqlWhereClause += filter;
+		};
+	});
+
+	sql += sqlWhereClause + ` GROUP BY name ORDER BY name`;
+	console.log(sql);
 
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
@@ -30,20 +107,54 @@ app.post('/api/loadUserSettings', (req, res) => {
 		}
 
 		let string = JSON.stringify(results);
-		//let obj = JSON.parse(string);
+
 		res.send({ express: string });
 	});
+
 	connection.end();
 });
 
-app.post('/api/getMovies', (req, res) => {
+app.post('/api/searchRecommendations', (req, res) => {
 
 	let connection = mysql.createConnection(config);
 
-	let sql = `SELECT * FROM shchowdh.movies`;
+	let sql =
+		`SELECT DISTINCT 
+		movies.name, 
+		ANY_VALUE(movies.year) AS year, 
+		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
+		group_concat(DISTINCT movies_genres.genre) AS genre
+		FROM movies
+
+		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id
+		INNER JOIN directors ON directors.id = movies_directors.director_id
+		INNER JOIN movies_genres ON movies_genres.movie_id = movies.id
+		WHERE `;
+
+	let data = [];
+
+	if (req.body.director !== '') {
+		sql += "CONCAT(directors.first_name, \" \", directors.last_name) = ?";
+		data.push(req.body.director);
+	} else if (req.body.genre.length > 0) {
+
+		for (let i = 0; i < req.body.genre.length; i++) {
+			if (i > 0) {
+				sql += " OR "
+			}
+			sql += "genre LIKE ?";
+			data.push(req.body.genre[i]);
+		}
+
+	} else if (req.body.year != '') {
+		sql += "year = ?";
+		data.push(req.body.year);
+	}
+
+	sql += ` GROUP BY name ORDER BY name`;
 	console.log(sql);
 
-	connection.query(sql, (error, results, fields) => {
+	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -74,7 +185,8 @@ app.post('/api/addReview', (req, res) => {
 	});
 
 	connection.end();
-})
+});
+
 
 
 app.listen(port, () => console.log("Listening on port ${port}")); //for the dev version
