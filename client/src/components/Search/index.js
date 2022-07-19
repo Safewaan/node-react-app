@@ -138,9 +138,12 @@ const Search = () => {
 
                 <ul>
                     {movies.map(function (movie) {
-                        const reviewTitles = movie.reviewTitles;
-                        const reviewContents = movie.reviewContents;
-                        const ReviewScores = movie.ReviewScores;
+                        let reviews = movie.reviews;
+                        let reviewsList = [];
+                        if (reviews !== null) {
+                            reviewsList = reviews.split(",");
+                        };
+
                         return (
                             <li>
                                 <Typography
@@ -158,6 +161,23 @@ const Search = () => {
                                     Average User Rating: {movie.AverageRating} <br></br>
                                     User Reviews:
                                 </Typography>
+
+
+                                {reviewsList.map(function (review) {
+                                    let reviewComponents = review.split(" - ");
+                                    return (
+                                        <li>
+                                            <Typography
+                                                variant="h7"
+                                                gutterBottom
+                                                component="div">
+                                                {reviewComponents[0]} <br></br>
+                                                {reviewComponents[1]} <br></br>
+                                                {reviewComponents[2]}
+                                            </Typography>
+                                        </li>
+                                    )
+                                })}
 
                             </li>
                         )

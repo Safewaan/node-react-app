@@ -51,11 +51,9 @@ app.post('/api/searchMovies', (req, res) => {
 	let sql =
 		`SELECT DISTINCT 
 		movies.name, 
-		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
-		group_concat(DISTINCT Review.reviewTitle) AS reviewTitles, 
-		group_concat(DISTINCT Review.reviewContent) AS reviewContents, 
-		group_concat(DISTINCT Review.reviewScore) AS ReviewScores, 
-		AVG(Review.reviewScore) AS AverageRating
+		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName,
+		AVG(Review.reviewScore) AS AverageRating,
+		GROUP_CONCAT(DISTINCT CONCAT("Title: ", Review.reviewTitle, " - Content: ", Review.reviewContent, " - Score: ", Review.reviewScore)) AS reviews
 
 		FROM movies
 		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id
