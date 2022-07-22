@@ -246,7 +246,7 @@ const Review = () => {
                                 <span>{" | Rating: " + review.selectedRating}</span>
                             </li>
                         )
-                    })};
+                    })}
                 </ul>
 
             </Grid>

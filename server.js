@@ -21,8 +21,8 @@ app.post('/api/getMovies', (req, res) => {
 		`SELECT DISTINCT 
 		movies.name, 
 		ANY_VALUE(movies.year) AS year, 
-		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
-		group_concat(movies_genres.genre) AS genres
+		GROUP_CONCAT(DISTINCT CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
+		group_concat(DISTINCT movies_genres.genre) AS genres
 		FROM movies
 		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id
 		INNER JOIN directors ON directors.id = movies_directors.director_id
@@ -51,7 +51,7 @@ app.post('/api/searchMovies', (req, res) => {
 	let sql =
 		`SELECT DISTINCT 
 		movies.name, 
-		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName,
+		GROUP_CONCAT(DISTINCT CONCAT(directors.first_name, " ", directors.last_name)) AS directorName,
 		AVG(Review.reviewScore) AS AverageRating,
 		GROUP_CONCAT(DISTINCT CONCAT("Title: ", Review.reviewTitle, " - Content: ", Review.reviewContent, " - Score: ", Review.reviewScore)) AS reviews
 
@@ -71,18 +71,18 @@ app.post('/api/searchMovies', (req, res) => {
 	let directorFilter = '';
 
 	if (req.body.name !== '') {
-		nameFilter = "name = ?";
-		data.push(req.body.name);
+		nameFilter = "name LIKE ?";
+		data.push("%" + req.body.name + "%");
 	}
 
 	if (req.body.actor !== '') {
-		actorFilter = 'CONCAT(actors.first_name, \" \", actors.last_name) = ?';
-		data.push(req.body.actor);
+		actorFilter = 'CONCAT(actors.first_name, \" \", actors.last_name) LIKE ?';
+		data.push("%" + req.body.actor + "%");
 	}
 
 	if (req.body.director !== '') {
-		directorFilter = "CONCAT(directors.first_name, \" \", directors.last_name) = ?";
-		data.push(req.body.director);
+		directorFilter = "CONCAT(directors.first_name, \" \", directors.last_name) LIKE ?";
+		data.push("%" + req.body.director + "%");
 	}
 
 	let filters = [nameFilter, actorFilter, directorFilter];
@@ -120,7 +120,7 @@ app.post('/api/searchRecommendations', (req, res) => {
 		`SELECT DISTINCT 
 		movies.name, 
 		ANY_VALUE(movies.year) AS year, 
-		ANY_VALUE(CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
+		GROUP_CONCAT(DISTINCT CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
 		group_concat(DISTINCT movies_genres.genre) AS genre
 		FROM movies
 
@@ -131,9 +131,16 @@ app.post('/api/searchRecommendations', (req, res) => {
 
 	let data = [];
 
-	if (req.body.director !== '') {
-		sql += "CONCAT(directors.first_name, \" \", directors.last_name) = ?";
-		data.push(req.body.director);
+	if (req.body.director.length > 0) {
+
+		for (let i = 0; i < req.body.director.length; i++) {
+			if (i > 0) {
+				sql += " OR "
+			}
+			sql += "CONCAT(directors.first_name, \" \", directors.last_name) = ?";
+			data.push(req.body.director[i]);
+		}
+
 	} else if (req.body.genre.length > 0) {
 
 		for (let i = 0; i < req.body.genre.length; i++) {

@@ -98,7 +98,7 @@ const Recommendation = () => {
         let yearSearch = '';
 
         if (filter === "Director") {
-            directorSearch = selectedMovieObj.directorName;
+            directorSearch = selectedMovieObj.directorName.split(",");
         };
 
         if (filter === "Genre") {
@@ -199,6 +199,8 @@ const Recommendation = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => { retrieveRecommendations() }}>Recommend</Button>
+
+                <Box sx={{ m: 3 }} />
 
                 <Typography
                     variant="h4"
