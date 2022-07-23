@@ -33,8 +33,10 @@ const Landing = () => {
                 <Typography
                     variant="h6"
                     gutterBottom
-                    component="div">
-                    Welcome to Rotten Potatoes! This website is a review-aggregation website for movies. 
+                    component="div"
+                    align = 'center'>
+                    Welcome to Rotten Potatoes! This website is a review-aggregation website for movies. <br></br>
+                    Search for, add a review for, and look for recommendations based on your favourite movies.
                 </Typography>
 
             </Grid>

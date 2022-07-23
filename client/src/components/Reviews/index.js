@@ -17,8 +17,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import history from '../Navigation/history';
 
-//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
-const serverURL = "";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
+//const serverURL = "";
 
 const Review = () => {
 
@@ -196,6 +196,19 @@ const Review = () => {
                 justifyContent="center"
                 alignItems="center"
             >
+
+                <Box sx={{ m: 3 }} />
+
+                <Typography
+                    variant="h6"
+                    gutterBottom
+                    component="div"
+                    align = 'center'>
+                    Add a review for a movie. A title, body and score is required for a valid review.
+                </Typography>
+
+                <Box sx={{ m: 3 }} />
+
                 <MovieSelection
                     selectedMovie={selectedMovie}
                     movieError={movieError}
