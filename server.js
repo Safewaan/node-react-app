@@ -72,17 +72,17 @@ app.post('/api/searchMovies', (req, res) => {
 
 	if (req.body.name !== '') {
 		nameFilter = "name LIKE ?";
-		data.push("%" + req.body.name + "%");
+		data.push(req.body.name + "%");
 	}
 
 	if (req.body.actor !== '') {
 		actorFilter = 'CONCAT(actors.first_name, \" \", actors.last_name) LIKE ?';
-		data.push("%" + req.body.actor + "%");
+		data.push(req.body.actor + "%");
 	}
 
 	if (req.body.director !== '') {
 		directorFilter = "CONCAT(directors.first_name, \" \", directors.last_name) LIKE ?";
-		data.push("%" + req.body.director + "%");
+		data.push(req.body.director + "%");
 	}
 
 	let filters = [nameFilter, actorFilter, directorFilter];
