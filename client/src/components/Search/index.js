@@ -8,8 +8,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import history from '../Navigation/history';
 
-//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
-const serverURL = ""; 
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3094"
+//const serverURL = ""; 
 
 const Search = () => {
 
