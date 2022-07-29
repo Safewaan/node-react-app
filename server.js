@@ -20,10 +20,12 @@ app.post('/api/getMovies', (req, res) => {
 	let sql =
 		`SELECT DISTINCT 
 		movies.name, 
+		GROUP_CONCAT(DISTINCT movies.id) AS id, 
 		ANY_VALUE(movies.year) AS year, 
 		GROUP_CONCAT(DISTINCT CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
 		group_concat(DISTINCT movies_genres.genre) AS genres
 		FROM movies
+
 		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id
 		INNER JOIN directors ON directors.id = movies_directors.director_id
 		INNER JOIN movies_genres ON movies_genres.movie_id = movies.id
