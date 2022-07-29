@@ -121,7 +121,7 @@ app.post('/api/searchRecommendations', (req, res) => {
 		movies.name, 
 		ANY_VALUE(movies.year) AS year, 
 		GROUP_CONCAT(DISTINCT CONCAT(directors.first_name, " ", directors.last_name)) AS directorName, 
-		group_concat(DISTINCT movies_genres.genre) AS genre
+		GROUP_CONCAT(DISTINCT movies_genres.genre) AS genre
 		FROM movies
 
 		INNER JOIN movies_directors ON movies_directors.movie_id = movies.id

@@ -233,7 +233,7 @@ const Recommendation = () => {
                                         variant="h5"
                                         gutterBottom
                                         component="div">
-                                        {movie.name} - Genre: {movie.genre}
+                                        {movie.name} - Genre: {movie.genre} - Year: {movie.year}
                                     </Typography>
                                 </li>
                             )
